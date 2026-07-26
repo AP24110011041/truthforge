@@ -1,5 +1,5 @@
 type Props = {
-  report: any;
+  report?: any;
 };
 
 export default function ResearchReport({ report }: Props) {
