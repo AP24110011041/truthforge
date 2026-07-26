@@ -6,7 +6,7 @@ import { DashboardPage } from "@/pages/DashboardPage";
 import { FactCheckPage } from "@/pages/FactCheckPage";
 import { NotFoundPage } from "@/pages/NotFoundPage";
 import { ReportsPage } from "@/pages/ReportsPage";
-import { ResearchPage } from "@/pages/ResearchPage";
+import ResearchPage from "@/pages/ResearchPage";
 import { SettingsPage } from "@/pages/SettingsPage";
 
 export const router = createBrowserRouter([

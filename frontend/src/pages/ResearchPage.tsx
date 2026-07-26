@@ -1,230 +1,461 @@
-import ResearchReport from "@/components/research/ResearchReport";
-import { motion } from "framer-motion";
-import { useState } from "react";
-import { conductResearch } from "@/services/research";
-import {
-  ArrowRight,
-  BookOpenCheck,
-  BrainCircuit,
-  FileStack,
-  SlidersHorizontal,
-} from "lucide-react";
+type Props = {
+  report: any;
+};
 
-import { SectionTitle } from "@/components/common/SectionTitle";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
-import { researchTemplates } from "@/lib/mockData";
-import {
-  fadeInUp,
-  pageTransition,
-  staggerContainer,
-} from "@/lib/motion";
+export default function ResearchReport({ report }: Props) {
+  const confidence =
+    (report?.executive_summary?.overall_confidence ?? 0) * 100;
 
-const planningStages = [
-  {
-    title: "Scope research question",
-    status: "Ready",
-    icon: BrainCircuit,
-  },
-  {
-    title: "Collect source evidence",
-    status: "Queued",
-    icon: FileStack,
-  },
-  {
-    title: "Prepare report outline",
-    status: "Reserved",
-    icon: BookOpenCheck,
-  },
-];
+  return (
+    <div className="space-y-6">
 
-export function ResearchPage() {
-  const [question, setQuestion] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [result, setResult] = useState<any>(null);
+      {/* Header */}
+      <div className="rounded-3xl border border-white/10 bg-slate-950/45 p-6">
+        <h1 className="text-3xl font-bold text-white">
+          {report?.metadata?.title}
+        </h1>
 
-  const handleResearch = async () => {
-    if (!question.trim()) {
-      alert("Please enter a research question.");
-      return;
-    }
+        <p className="mt-2 text-slate-400">
+          Generated on{" "}
+          {report?.metadata?.generated_at
+            ? new Date(report.metadata.generated_at).toLocaleString()
+            : "N/A"}
+        </p>
+      </div>
 
-    try {
-      setLoading(true);
+      {/* AI Agent Status */}
+      <div className="rounded-2xl border border-emerald-500/20 bg-emerald-500/10 p-5">
+  <div className="flex items-center justify-between">
+    <div>
+      <h2 className="text-lg font-semibold text-white">
+        AI Agent Status
+      </h2>
 
-      const data = await conductResearch(question);
+      <p className="mt-2 text-slate-300">
+        Research completed successfully.
+      </p>
+    </div>
 
-      console.log(JSON.stringify(data, null, 2));
+    <div className="rounded-full bg-emerald-500 px-4 py-2 text-sm font-semibold text-white">
+      Completed
+    </div>
+  </div>
+</div>
 
-      setResult(data);
-    } catch (err) {
-      console.error(err);
-      alert("Backend connection failed.");
-    } finally {
-      setLoading(false);
-    }
-  };
-    return (
-    <motion.div className="space-y-8" {...pageTransition}>
-      <SectionTitle
-        eyebrow="Research Workspace"
-        title="Plan a Source-Backed Investigation"
-        description="A polished intake surface for future autonomous research planning."
-        action={
-          <Button
-            onClick={handleResearch}
-            disabled={loading}
-            className="h-11 bg-gradient-to-r from-violet-500 to-blue-500 text-white shadow-lg shadow-blue-500/20"
-          >
-            {loading ? "Researching..." : "Start Research"}
-            <ArrowRight className="size-4" aria-hidden="true" />
-          </Button>
-        }
-      />
+      {/* Overview Cards */}
+<div className="grid gap-4 md:grid-cols-4">
 
-      <section className="grid gap-6 xl:grid-cols-[1.1fr_0.9fr]">
-        {/* Left Panel */}
-        <motion.div
-          variants={fadeInUp}
-          initial="initial"
-          animate="animate"
-          className="rounded-3xl border border-white/10 bg-white/[0.055] p-6 shadow-2xl shadow-black/20 backdrop-blur-2xl"
-        >
-          <div className="mb-5 flex items-center justify-between gap-4">
-            <div>
-              <h2 className="text-lg font-semibold text-white">
-                Research Question
-              </h2>
+  <OverviewCard
+    title="Confidence"
+    value={`${(
+      (report?.executive_summary?.overall_confidence ?? 0) * 100
+    ).toFixed(0)}%`}
+    color="text-green-400"
+  />
 
-              <p className="mt-1 text-sm text-slate-400">
-                Structure the question before agent orchestration begins.
-              </p>
-            </div>
+  <OverviewCard
+    title="Quality"
+    value={`${(
+      (report?.quality_metrics?.overall_quality_score ?? 0) * 100
+    ).toFixed(0)}%`}
+    color="text-yellow-400"
+  />
 
-            <Badge
-              variant="outline"
-              className="border-violet-300/20 bg-violet-400/10 text-violet-100"
-            >
-              Draft
-            </Badge>
-          </div>
+  <OverviewCard
+    title="Sources"
+    value={report?.research_findings?.total_sources}
+    color="text-blue-400"
+  />
 
-          <div className="space-y-4">
-            <Textarea
-              value={question}
-              onChange={(e) => setQuestion(e.target.value)}
-              className="min-h-40 border-white/10 bg-slate-950/45 text-slate-100 placeholder:text-slate-500 focus-visible:ring-blue-400/30"
-              placeholder="Example: What evidence supports or contradicts the claim that remote work improves software engineering productivity?"
-              aria-label="Research question"
+  <OverviewCard
+    title="Verified"
+    value={report?.fact_checking_results?.total_verified}
+    color="text-purple-400"
+  />
+
+</div>
+
+      {/* Research Question */}
+      <div className="rounded-3xl border border-white/10 bg-slate-950/45 p-6">
+        <h2 className="text-xl font-semibold text-white">
+          Research Question
+        </h2>
+
+        <p className="mt-4 text-slate-300">
+          {report?.executive_summary?.question}
+        </p>
+      </div>
+
+      {/* Summary */}
+      <div className="rounded-3xl border border-white/10 bg-slate-950/45 p-6">
+        <h2 className="text-xl font-semibold text-white">
+          Executive Summary
+        </h2>
+
+        <p className="mt-4 text-slate-300">
+          {report?.executive_summary?.summary}
+        </p>
+      </div>
+
+      {/* Metrics */}
+      <div className="grid gap-4 md:grid-cols-2">
+
+        <div className="rounded-3xl border border-white/10 bg-slate-950/45 p-6">
+          <h3 className="text-blue-400 font-semibold">
+            Confidence Score
+          </h3>
+
+          <div className="mt-4 h-3 w-full rounded-full bg-slate-700 overflow-hidden">
+            <div
+              className="h-full rounded-full bg-gradient-to-r from-green-400 to-emerald-500 transition-all duration-700"
+              style={{ width: `${confidence}%` }}
             />
-
-            <div className="grid gap-3 sm:grid-cols-3">
-              <div className="rounded-2xl border border-white/10 bg-white/[0.045] p-4">
-                <p className="text-xs font-medium uppercase tracking-wide text-slate-500">
-                  Depth
-                </p>
-
-                <p className="mt-2 text-sm font-semibold text-white">
-                  Standard
-                </p>
-              </div>
-
-              <div className="rounded-2xl border border-white/10 bg-white/[0.045] p-4">
-                <p className="text-xs font-medium uppercase tracking-wide text-slate-500">
-                  Citation Mode
-                </p>
-
-                <p className="mt-2 text-sm font-semibold text-white">
-                  Required
-                </p>
-              </div>
-
-              <div className="rounded-2xl border border-white/10 bg-white/[0.045] p-4">
-                <p className="text-xs font-medium uppercase tracking-wide text-slate-500">
-                  Output
-                </p>
-
-                <p className="mt-2 text-sm font-semibold text-white">
-                  Professional Report
-                </p>
-              </div>
-            </div>
           </div>
-        </motion.div>
 
-        {/* Right Panel */}
-        <motion.div
-          variants={staggerContainer}
-          initial="initial"
-          animate="animate"
-          className="grid gap-4"
-        >
-          <div className="rounded-3xl border border-white/10 bg-white/[0.055] p-6 shadow-2xl shadow-black/20 backdrop-blur-2xl">
-            <div className="mb-5 flex items-center gap-3">
-              <div className="grid size-10 place-items-center rounded-xl bg-blue-400/10 text-blue-100">
-                <SlidersHorizontal className="size-5" aria-hidden="true" />
+          <p className="mt-3 text-2xl font-bold text-green-400">
+            {confidence.toFixed(1)}%
+          </p>
+        </div>
+
+        <div className="rounded-3xl border border-white/10 bg-slate-950/45 p-6">
+          <h3 className="text-yellow-400 font-semibold">
+            Quality Score
+          </h3>
+
+          <p className="mt-4 text-3xl font-bold text-yellow-300">
+            {((report?.executive_summary?.quality_score ?? 0) * 100).toFixed(0)}%
+          </p>
+        </div>
+
+      </div>
+
+      {/* Findings */}
+      <div className="rounded-3xl border border-white/10 bg-slate-950/45 p-6">
+        <h2 className="text-xl font-semibold text-white">
+          Research Findings
+        </h2>
+
+        <p className="mt-4 text-slate-300">
+          {report?.research_findings?.key_findings}
+        </p>
+
+        <div className="mt-6 grid grid-cols-2 gap-4">
+
+          <div>
+            <p className="text-slate-500 text-sm">
+              Sources
+            </p>
+
+            <p className="text-2xl font-bold text-white">
+              {report?.research_findings?.total_sources}
+            </p>
+          </div>
+
+          <div>
+            <p className="text-slate-500 text-sm">
+              Findings
+            </p>
+
+            <p className="text-2xl font-bold text-white">
+              {report?.research_findings?.total_findings}
+            </p>
+          </div>
+
+        </div>
+      </div>
+
+      {/* Verification */}
+      <div className="rounded-3xl border border-white/10 bg-slate-950/45 p-6">
+        <h2 className="text-xl font-semibold text-white">
+          Fact Verification
+        </h2>
+
+        <div className="mt-6 grid md:grid-cols-3 gap-4">
+
+          <div className="rounded-xl bg-green-500/10 p-4">
+            <p className="text-green-400">
+              Verified
+            </p>
+
+            <p className="text-3xl font-bold text-white">
+              {report?.fact_checking_results?.total_verified}
+            </p>
+          </div>
+
+          <div className="rounded-xl bg-yellow-500/10 p-4">
+            <p className="text-yellow-400">
+              Partial
+            </p>
+
+            <p className="text-3xl font-bold text-white">
+              {report?.fact_checking_results?.total_partially_verified}
+            </p>
+          </div>
+
+          <div className="rounded-xl bg-red-500/10 p-4">
+            <p className="text-red-400">
+              Unverified
+            </p>
+
+            <p className="text-3xl font-bold text-white">
+              {report?.fact_checking_results?.total_unverified}
+            </p>
+          </div>
+
+        </div>
+      </div>
+
+      {/* Hallucination Analysis */}
+
+      <div className="rounded-3xl border border-white/10 bg-slate-950/45 p-6">
+        <h2 className="text-xl font-semibold text-white">
+          Hallucination Analysis
+        </h2>
+
+        <div className="mt-5 grid md:grid-cols-2 gap-6">
+
+          <div>
+            <p className="text-slate-500 text-sm">
+              Risk Level
+            </p>
+
+            <p className="mt-2 text-2xl font-bold text-green-400 capitalize">
+              {report?.hallucination_analysis?.risk_level}
+            </p>
+          </div>
+
+          <div>
+            <p className="text-slate-500 text-sm">
+              Hallucination Score
+            </p>
+
+            <p className="mt-2 text-2xl font-bold text-white">
+              {report?.hallucination_analysis?.hallucination_score}
+            </p>
+          </div>
+
+        </div>
+
+        <div className="mt-8">
+          <h3 className="font-semibold text-white">
+            Recommendations
+          </h3>
+
+          <ul className="mt-4 list-disc list-inside space-y-2 text-slate-300">
+            {report?.hallucination_analysis?.recommendations?.map(
+              (item: string, index: number) => (
+                <li key={index}>{item}</li>
+              )
+            )}
+          </ul>
+        </div>
+      </div>
+
+      {/* Quality Metrics */}
+
+      <div className="rounded-3xl border border-white/10 bg-slate-950/45 p-6">
+
+        <h2 className="text-xl font-semibold text-white">
+          Quality Metrics
+        </h2>
+
+        <div className="mt-6 grid md:grid-cols-2 lg:grid-cols-4 gap-4">
+
+          <Metric
+            title="Source Diversity"
+            value={report?.quality_metrics?.source_diversity}
+          />
+
+          <Metric
+            title="Completeness"
+            value={report?.quality_metrics?.information_completeness}
+          />
+
+          <Metric
+            title="Verification"
+            value={report?.quality_metrics?.verification_coverage}
+          />
+
+          <Metric
+            title="Citation Accuracy"
+            value={report?.quality_metrics?.citation_accuracy}
+          />
+
+        </div>
+
+      </div>
+
+      {/* Citations */}
+
+      <div className="rounded-3xl border border-white/10 bg-slate-950/45 p-6">
+
+        <h2 className="text-xl font-semibold text-white">
+          References (APA)
+        </h2>
+
+        <div className="mt-5 space-y-4">
+
+          {report?.citations?.apa?.map(
+            (citation: string, index: number) => (
+              <div
+                key={index}
+                className="rounded-xl border border-white/10 bg-slate-900/60 p-4 text-slate-300"
+              >
+                {citation}
               </div>
+            )
+          )}
 
-              <div>
-                <h2 className="text-lg font-semibold text-white">
-                  Agent Run Plan
-                </h2>
+        </div>
 
-                <p className="text-sm text-slate-400">
-                  Execution stages reserved for the future workflow.
-                </p>
-              </div>
-            </div>
+      </div>
 
-            <div className="grid gap-3">
-              {planningStages.map((stage) => (
-                <motion.div
-                  key={stage.title}
-                  variants={fadeInUp}
-                  className="flex items-center justify-between gap-4 rounded-2xl border border-white/10 bg-slate-950/45 p-4"
-                >
-                  <div className="flex min-w-0 items-center gap-3">
-                    <div className="grid size-10 shrink-0 place-items-center rounded-xl bg-gradient-to-br from-violet-500/20 to-blue-500/15 text-blue-100">
-                      <stage.icon className="size-4" aria-hidden="true" />
-                    </div>
+      {/* Verification Details */}
 
-                    <p className="truncate text-sm font-medium text-white">
-                      {stage.title}
-                    </p>
-                  </div>
+      <div className="rounded-3xl border border-white/10 bg-slate-950/45 p-6">
+        <h2 className="text-xl font-semibold text-white">
+          Verification Details
+        </h2>
 
-                  <Badge
-                    variant="outline"
-                    className="border-white/10 bg-white/[0.06] text-slate-200"
+        <div className="mt-6 overflow-x-auto">
+          <table className="w-full text-left">
+            <thead>
+              <tr className="border-b border-white/10 text-slate-400">
+                <th className="pb-3">Finding</th>
+                <th className="pb-3">Status</th>
+                <th className="pb-3">Confidence</th>
+                <th className="pb-3">Evidence</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              {report?.fact_checking_results?.details?.map(
+                (item: any) => (
+                  <tr
+                    key={item.finding_id}
+                    className="border-b border-white/5"
                   >
-                    {stage.status}
-                  </Badge>
-                </motion.div>
-              ))}
-            </div>
-          </div>
+                    <td className="py-4 text-white">
+                      {item.finding_id}
+                    </td>
 
-          <div className="rounded-3xl border border-white/10 bg-white/[0.045] p-6 backdrop-blur-2xl">
-            <h2 className="text-lg font-semibold text-white">
-              Research Templates
-            </h2>
+                    <td className="py-4">
+                      <span
+                        className={`rounded-full px-3 py-1 text-sm font-medium ${
+                          item.status === "verified"
+                            ? "bg-green-500/20 text-green-400"
+                            : item.status === "partially_verified"
+                            ? "bg-yellow-500/20 text-yellow-400"
+                            : "bg-red-500/20 text-red-400"
+                        }`}
+                      >
+                        {item.status?.replace("_", " ") ?? "Unknown"}
+                      </span>
+                    </td>
 
-            <div className="mt-4 grid gap-3">
-              {researchTemplates.map((template) => (
-                <div
-                  key={template}
-                  className="rounded-2xl border border-white/10 bg-slate-950/45 p-4 text-sm font-medium text-slate-200"
-                >
-                  {template}
-                </div>
-              ))}
-            </div>
-          </div>
+                    <td className="py-4 text-cyan-300">
+                      {((item.confidence ?? 0) * 100).toFixed(0)}%
+                    </td>
 
-          {result && <ResearchReport report={result.report} />}
-        </motion.div>
-      </section>
-    </motion.div>
+                    <td className="py-4 text-slate-300">
+                      {item.supporting_evidence_count}
+                    </td>
+                  </tr>
+                )
+              )}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      {/* Overall Statistics */}
+
+      <div className="grid gap-4 md:grid-cols-4">
+
+        <StatCard
+          title="Sources"
+          value={report?.research_findings?.total_sources}
+        />
+
+        <StatCard
+          title="Findings"
+          value={report?.research_findings?.total_findings}
+        />
+
+        <StatCard
+          title="Citations"
+          value={report?.citations?.total_citations}
+        />
+
+        <StatCard
+          title="Overall Quality"
+          value={`${(
+            (report?.quality_metrics?.overall_quality_score ?? 0) * 100
+          ).toFixed(0)}%`}
+        />
+
+      </div>
+
+    </div>
+  );
+}
+
+function StatCard({
+  title,
+  value,
+}: {
+  title: string;
+  value?: string | number;
+}) {
+  return (
+    <div className="rounded-2xl border border-white/10 bg-slate-900/60 p-5">
+      <p className="text-sm text-slate-400">
+        {title}
+      </p>
+
+      <p className="mt-3 text-3xl font-bold text-white">
+        {value ?? "N/A"}
+      </p>
+    </div>
+  );
+}
+
+function Metric({
+  title,
+  value,
+}: {
+  title: string;
+  value?: number;
+}) {
+  return (
+    <div className="rounded-xl border border-white/10 bg-slate-900/60 p-5">
+      <p className="text-sm text-slate-400">{title}</p>
+
+      <p className="mt-3 text-3xl font-bold text-cyan-400">
+        {((value ?? 0) * 100).toFixed(0)}%
+      </p>
+    </div>
+  );
+}
+
+function OverviewCard({
+  title,
+  value,
+  color,
+}: {
+  title: string;
+  value?: string | number;
+  color: string;
+}) {
+  return (
+    <div className="rounded-2xl border border-white/10 bg-slate-900/60 p-5">
+      <p className="text-sm text-slate-400">
+        {title}
+      </p>
+
+      <p className={`mt-3 text-3xl font-bold ${color}`}>
+        {value ?? "N/A"}
+      </p>
+    </div>
   );
 }
