@@ -2,8 +2,8 @@
 
 from fastapi import APIRouter, HTTPException, status
 from typing import Dict, Any
-from backend.schemas import ResearchRequest, ResearchResponse
-from backend.services import AgentService
+from schemas import ResearchRequest, ResearchResponse
+from services import AgentService
 from datetime import datetime
 
 router = APIRouter(prefix="/research", tags=["research"])

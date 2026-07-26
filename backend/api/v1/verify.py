@@ -2,8 +2,8 @@
 
 from fastapi import APIRouter, HTTPException, status
 from typing import Dict, Any, List
-from backend.schemas import VerificationRequest, VerificationResponse
-from backend.services import VerificationService
+from schemas import VerificationRequest, VerificationResponse
+from services import VerificationService
 from datetime import datetime
 import uuid
 

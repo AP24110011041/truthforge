@@ -2,8 +2,8 @@
 
 from fastapi import APIRouter, HTTPException, status
 from typing import Dict, Any, List
-from backend.schemas import DocumentUploadRequest, DocumentResponse
-from backend.services import DocumentService
+from schemas import DocumentUploadRequest, DocumentResponse
+from services import DocumentService
 from datetime import datetime
 
 router = APIRouter(prefix="/upload", tags=["documents"])

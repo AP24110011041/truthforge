@@ -1,7 +1,7 @@
 """Agent Service - Manages agent lifecycle and execution."""
 
 from typing import Any, Dict, Optional
-from backend.agents import Orchestrator
+from agents import Orchestrator
 
 
 class AgentService:
