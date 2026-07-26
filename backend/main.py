@@ -1,9 +1,9 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from backend.api import api_router
-from backend.core.config import get_settings
-from backend.core.logging import configure_logging
+from api import api_router
+from core.config import get_settings
+from core.logging import configure_logging
 
 
 def create_app() -> FastAPI:
