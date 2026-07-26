@@ -1,0 +1,12 @@
+{
+  "name": "truthforge-ai",
+  "private": true,
+  "version": "0.1.0",
+  "description": "TruthForge AI monorepo.",
+  "scripts": {
+    "dev:frontend": "npm --prefix frontend run dev",
+    "build:frontend": "npm --prefix frontend run build",
+    "lint:frontend": "npm --prefix frontend run lint",
+    "dev:backend": "cd backend && python -m uvicorn main:app --reload --host 127.0.0.1 --port 8000"
+  }
+}
