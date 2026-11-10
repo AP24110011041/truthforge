@@ -1,4 +1,4 @@
-import { Bot, FileText, LayoutDashboard, SearchCheck, Settings2, ShieldQuestion } from "lucide-react";
+import { Bot, FileText, Image, LayoutDashboard, SearchCheck, Settings2, ShieldQuestion } from "lucide-react";
 
 export const mainNavigation = [
   {
@@ -15,6 +15,12 @@ export const mainNavigation = [
     label: "Fact Check",
     path: "/fact-check",
     icon: ShieldQuestion
+  },
+  // CIFAKE entry removed for TIGAS‑only release
+  {
+    label: "TIGAS Classifier",
+    path: "/tigas",
+    icon: Image
   },
   {
     label: "Agents",
